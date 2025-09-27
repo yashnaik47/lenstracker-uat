@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Lens Usage Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Logo / Icon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
+  <link rel="apple-touch-icon" href="favicon.png">
+  <link rel="manifest" href="manifest.json">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 20px;
+      text-align: center;
+      width: 350px;
+      box-shadow: 0px 8px 20px rgba(0,0,0,0.2);
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      font-size: 1.8rem;
+      color: #444;
+    }
+
+    .progress-circle {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      border: 10px solid #eee;
+      border-top-color: #74b9ff;
+      margin: 0 auto 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #444;
+      position: relative;
+    }
+
+    .count {
+      font-size: 1.2rem;
+      margin: 15px 0;
+    }
+
+    button {
+      background: #74b9ff;
+      border: none;
+      padding: 12px 20px;
+      margin: 8px;
+      font-size: 1rem;
+      border-radius: 10px;
+      cursor: pointer;
+      color: white;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #0984e3;
+    }
+
+    .reset {
+      background: #ff7675;
+    }
+
+    .reset:hover {
+      background: #d63031;
+    }
+
+    footer {
+      margin-top: 20px;
+      font-size: 0.8rem;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Lens Usage Tracker</h1>
+    <div class="progress-circle" id="progress">
+      <span id="daysUsed">0</span>/30
+    </div>
+    <div class="count">Days Worn</div>
+    <button onclick="increment()">+ Add Day</button>
+    <button class="reset" onclick="resetCounter()">Reset</button>
+    <footer>
+      Data saved automatically for long-term use
+    </footer>
+  </div>
+
+  <script>
+    const totalDays = 30;
+    let usedDays = localStorage.getItem("lensDays") 
+                   ? parseInt(localStorage.getItem("lensDays")) 
+                   : 0;
+
+    function updateUI() {
+      document.getElementById("daysUsed").textContent = usedDays;
+      const circle = document.getElementById("progress");
+      let percent = (usedDays / totalDays) * 360;
+      circle.style.background = `conic-gradient(#74b9ff ${percent}deg, #eee ${percent}deg)`;
+    }
+
+    function increment() {
+      if (usedDays < totalDays) {
+        usedDays++;
+        localStorage.setItem("lensDays", usedDays);
+        updateUI();
+      } else {
+        alert("You have completed 30 days! Time to change your lenses.");
+      }
+    }
+
+    function resetCounter() {
+      if (confirm("Reset usage counter?")) {
+        usedDays = 0;
+        localStorage.setItem("lensDays", usedDays);
+        updateUI();
+      }
+    }
+
+    // Initialize UI on load
+    updateUI();
+  </script>
+</body>
+</html>
