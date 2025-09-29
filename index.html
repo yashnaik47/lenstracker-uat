@@ -27,7 +27,7 @@
       padding: 30px;
       border-radius: 20px;
       text-align: center;
-      width: 350px;
+      width: 380px;
       box-shadow: 0px 8px 20px rgba(0,0,0,0.2);
     }
 
@@ -62,7 +62,7 @@
       background: #74b9ff;
       border: none;
       padding: 12px 20px;
-      margin: 8px;
+      margin: 8px 4px;
       font-size: 1rem;
       border-radius: 10px;
       cursor: pointer;
@@ -82,6 +82,26 @@
       background: #d63031;
     }
 
+    .remove {
+      background: #fab005;
+    }
+
+    .remove:hover {
+      background: #e0a800;
+    }
+
+    .log {
+      text-align: left;
+      margin-top: 20px;
+      max-height: 120px;
+      overflow-y: auto;
+      font-size: 0.9rem;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      background: #f9f9f9;
+    }
+
     footer {
       margin-top: 20px;
       font-size: 0.8rem;
@@ -97,7 +117,14 @@
     </div>
     <div class="count">Days Worn</div>
     <button onclick="increment()">+ Add Day</button>
+    <button class="remove" onclick="decrement()">- Remove Day</button>
     <button class="reset" onclick="resetCounter()">Reset</button>
+
+    <div class="log" id="logBox">
+      <strong>Usage Log:</strong>
+      <ul id="logList"></ul>
+    </div>
+
     <footer>
       Data saved automatically for long-term use
     </footer>
@@ -109,27 +136,60 @@
                    ? parseInt(localStorage.getItem("lensDays")) 
                    : 0;
 
+    let logs = localStorage.getItem("lensLogs") 
+               ? JSON.parse(localStorage.getItem("lensLogs")) 
+               : [];
+
     function updateUI() {
       document.getElementById("daysUsed").textContent = usedDays;
       const circle = document.getElementById("progress");
       let percent = (usedDays / totalDays) * 360;
       circle.style.background = `conic-gradient(#74b9ff ${percent}deg, #eee ${percent}deg)`;
+
+      // Update log list
+      const logList = document.getElementById("logList");
+      logList.innerHTML = "";
+      logs.slice().reverse().forEach(entry => {
+        let li = document.createElement("li");
+        li.textContent = entry;
+        logList.appendChild(li);
+      });
     }
 
     function increment() {
       if (usedDays < totalDays) {
         usedDays++;
         localStorage.setItem("lensDays", usedDays);
+
+        let timestamp = new Date().toLocaleString();
+        logs.push(`Day ${usedDays} added on ${timestamp}`);
+        localStorage.setItem("lensLogs", JSON.stringify(logs));
+
         updateUI();
       } else {
         alert("You have completed 30 days! Time to change your lenses.");
       }
     }
 
+    function decrement() {
+      if (usedDays > 0) {
+        usedDays--;
+        localStorage.setItem("lensDays", usedDays);
+
+        let timestamp = new Date().toLocaleString();
+        logs.push(`Day removed on ${timestamp}. Now at ${usedDays} days`);
+        localStorage.setItem("lensLogs", JSON.stringify(logs));
+
+        updateUI();
+      }
+    }
+
     function resetCounter() {
       if (confirm("Reset usage counter?")) {
         usedDays = 0;
+        logs = [];
         localStorage.setItem("lensDays", usedDays);
+        localStorage.setItem("lensLogs", JSON.stringify(logs));
         updateUI();
       }
     }
