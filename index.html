@@ -58,16 +58,23 @@
       margin: 15px 0;
     }
 
+    .button-group {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+
     button {
       background: #74b9ff;
       border: none;
       padding: 12px 20px;
-      margin: 8px 4px;
       font-size: 1rem;
       border-radius: 10px;
       cursor: pointer;
       color: white;
       transition: 0.3s;
+      flex: 1;
+      margin: 0 5px;
     }
 
     button:hover {
@@ -116,9 +123,12 @@
       <span id="daysUsed">0</span>/30
     </div>
     <div class="count">Days Worn</div>
-    <button onclick="increment()">+ Add Day</button>
-    <button class="remove" onclick="decrement()">- Remove Day</button>
-    <button class="reset" onclick="resetCounter()">Reset</button>
+
+    <div class="button-group">
+      <button class="reset" onclick="resetCounter()">Reset</button>
+      <button class="remove" onclick="decrement()">- Remove Day</button>
+      <button onclick="increment()">+ Add Day</button>
+    </div>
 
     <div class="log" id="logBox">
       <strong>Usage Log:</strong>
@@ -146,7 +156,6 @@
       let percent = (usedDays / totalDays) * 360;
       circle.style.background = `conic-gradient(#74b9ff ${percent}deg, #eee ${percent}deg)`;
 
-      // Update log list
       const logList = document.getElementById("logList");
       logList.innerHTML = "";
       logs.slice().reverse().forEach(entry => {
@@ -194,7 +203,6 @@
       }
     }
 
-    // Initialize UI on load
     updateUI();
   </script>
 </body>
