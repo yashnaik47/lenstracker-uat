@@ -5,7 +5,6 @@
   <title>Lens Usage Tracker</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Logo / Icon -->
   <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
   <link rel="apple-touch-icon" href="favicon.png">
   <link rel="manifest" href="manifest.json">
@@ -77,25 +76,13 @@
       margin: 0 5px;
     }
 
-    button:hover {
-      background: #0984e3;
-    }
+    button:hover { background: #0984e3; }
 
-    .reset {
-      background: #ff7675;
-    }
+    .reset { background: #ff7675; }
+    .reset:hover { background: #d63031; }
 
-    .reset:hover {
-      background: #d63031;
-    }
-
-    .remove {
-      background: #fab005;
-    }
-
-    .remove:hover {
-      background: #e0a800;
-    }
+    .remove { background: #fab005; }
+    .remove:hover { background: #e0a800; }
 
     .log {
       text-align: left;
@@ -135,75 +122,17 @@
       <ul id="logList"></ul>
     </div>
 
-    <footer>
-      Data saved automatically for long-term use
-    </footer>
+    <footer>Data securely saved in Firebase 🔒</footer>
   </div>
 
-  <script>
-    const totalDays = 30;
-    let usedDays = localStorage.getItem("lensDays") 
-                   ? parseInt(localStorage.getItem("lensDays")) 
-                   : 0;
+  <!-- Firebase Integration -->
+  <script type="module">
+    // Import Firebase SDK
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-    let logs = localStorage.getItem("lensLogs") 
-               ? JSON.parse(localStorage.getItem("lensLogs")) 
-               : [];
-
-    function updateUI() {
-      document.getElementById("daysUsed").textContent = usedDays;
-      const circle = document.getElementById("progress");
-      let percent = (usedDays / totalDays) * 360;
-      circle.style.background = `conic-gradient(#74b9ff ${percent}deg, #eee ${percent}deg)`;
-
-      const logList = document.getElementById("logList");
-      logList.innerHTML = "";
-      logs.slice().reverse().forEach(entry => {
-        let li = document.createElement("li");
-        li.textContent = entry;
-        logList.appendChild(li);
-      });
-    }
-
-    function increment() {
-      if (usedDays < totalDays) {
-        usedDays++;
-        localStorage.setItem("lensDays", usedDays);
-
-        let timestamp = new Date().toLocaleString();
-        logs.push(`Day ${usedDays} added on ${timestamp}`);
-        localStorage.setItem("lensLogs", JSON.stringify(logs));
-
-        updateUI();
-      } else {
-        alert("You have completed 30 days! Time to change your lenses.");
-      }
-    }
-
-    function decrement() {
-      if (usedDays > 0) {
-        usedDays--;
-        localStorage.setItem("lensDays", usedDays);
-
-        let timestamp = new Date().toLocaleString();
-        logs.push(`Day removed on ${timestamp}. Now at ${usedDays} days`);
-        localStorage.setItem("lensLogs", JSON.stringify(logs));
-
-        updateUI();
-      }
-    }
-
-    function resetCounter() {
-      if (confirm("Reset usage counter?")) {
-        usedDays = 0;
-        logs = [];
-        localStorage.setItem("lensDays", usedDays);
-        localStorage.setItem("lensLogs", JSON.stringify(logs));
-        updateUI();
-      }
-    }
-
-    updateUI();
-  </script>
-</body>
-</html>
+    // Your Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCKR9Jqyu9Ufn6b7DEb8OtnRR2Xy5uCcmY",
+      authDomain: "lenstracker-13d37.firebaseapp.com",
+      projectId: "lenstracker-13d37",
