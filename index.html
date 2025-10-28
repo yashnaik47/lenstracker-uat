@@ -77,10 +77,8 @@
     }
 
     button:hover { background: #0984e3; }
-
     .reset { background: #ff7675; }
     .reset:hover { background: #d63031; }
-
     .remove { background: #fab005; }
     .remove:hover { background: #e0a800; }
 
@@ -125,14 +123,97 @@
     <footer>Data securely saved in Firebase 🔒</footer>
   </div>
 
-  <!-- Firebase Integration -->
   <script type="module">
-    // Import Firebase SDK
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
     import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-    // Your Firebase configuration
+    // --- Firebase Config ---
     const firebaseConfig = {
       apiKey: "AIzaSyCKR9Jqyu9Ufn6b7DEb8OtnRR2Xy5uCcmY",
       authDomain: "lenstracker-13d37.firebaseapp.com",
       projectId: "lenstracker-13d37",
+      storageBucket: "lenstracker-13d37.firebasestorage.app",
+      messagingSenderId: "45827845635",
+      appId: "1:45827845635:web:2b71348244bbba74e5e836",
+      measurementId: "G-B3QL419CQ2"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // --- App Logic ---
+    const totalDays = 30;
+    const userId = "default_user"; // Replace with login later if needed
+
+    let usedDays = 0;
+    let logs = [];
+
+    async function loadData() {
+      const ref = doc(db, "lensTracker", userId);
+      const snap = await getDoc(ref);
+      if (snap.exists()) {
+        const data = snap.data();
+        usedDays = data.usedDays || 0;
+        logs = data.logs || [];
+      }
+      updateUI();
+    }
+
+    async function saveData() {
+      await setDoc(doc(db, "lensTracker", userId), { usedDays, logs });
+    }
+
+    function updateUI() {
+      document.getElementById("daysUsed").textContent = usedDays;
+      const circle = document.getElementById("progress");
+      let percent = (usedDays / totalDays) * 360;
+      circle.style.background = `conic-gradient(#74b9ff ${percent}deg, #eee ${percent}deg)`;
+
+      const logList = document.getElementById("logList");
+      logList.innerHTML = "";
+      logs.slice().reverse().forEach(entry => {
+        let li = document.createElement("li");
+        li.textContent = entry;
+        logList.appendChild(li);
+      });
+    }
+
+    async function increment() {
+      if (usedDays < totalDays) {
+        usedDays++;
+        logs.push(`Day ${usedDays} added on ${new Date().toLocaleString()}`);
+        await saveData();
+        updateUI();
+      } else {
+        alert("You have completed 30 days! Time to change your lenses.");
+      }
+    }
+
+    async function decrement() {
+      if (usedDays > 0) {
+        usedDays--;
+        logs.push(`Day removed on ${new Date().toLocaleString()}. Now at ${usedDays} days`);
+        await saveData();
+        updateUI();
+      }
+    }
+
+    async function resetCounter() {
+      if (confirm("Reset usage counter?")) {
+        usedDays = 0;
+        logs = [];
+        await saveData();
+        updateUI();
+      }
+    }
+
+    // 👇 Attach functions to window so HTML can access them
+    window.increment = increment;
+    window.decrement = decrement;
+    window.resetCounter = resetCounter;
+
+    // Load existing data on startup
+    loadData();
+  </script>
+</body>
+</html>
